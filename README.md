@@ -8,7 +8,7 @@
 
 <p align="center"><a href="https://jackbo04.github.io/TomoDETR-release/#crowded"><img src="site/assets/stages/recorded-stages.gif" width="900" alt="Recorded stages: connected semantic foreground, native mean-shift centers, and direct point-set localization"></a></p>
 
-*Four neighboring particles merge into one DeepFinder semantic foreground; native mean-shift returns two inaccurate centers. TomoDETR localizes all four. [Play the recorded stages →](https://jackbo04.github.io/TomoDETR-release/#crowded)*
+*Four neighboring particles merge into one DeepFinder semantic foreground; native mean-shift returns two inaccurate centers. TomoDETR localizes all four. [Explore the linked 3D views →](https://jackbo04.github.io/TomoDETR-release/#crowded)*
 
 **[Inspect the native baseline pipelines →](https://jackbo04.github.io/TomoDETR-release/#native-traces)** Explore real DeepFinder mean-shift, DeepETPicker MP-NMS, and OCTOPI watershed intermediates in a separate crowded region.
 
