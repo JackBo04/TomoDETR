@@ -12,6 +12,8 @@
 
 *Same image, different particle predictions. Green: correct; pink: false positive; violet: missed. [Explore three real examples with an interactive comparison slider →](https://jackbo04.github.io/TomoDETR-release/#comparison)*
 
+**[Try the dynamic volume demo →](https://jackbo04.github.io/TomoDETR-release/demo/)** Scan original MRC crops in XY, XZ, or YZ; compare methods at the same depth; rotate synchronized 3D predictions.
+
 ## Why TomoDETR?
 
 - **Predict the target directly.** Continuous particle centers and classes, supervised by point annotations without dense particle masks.
