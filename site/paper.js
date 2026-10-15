@@ -6,9 +6,9 @@ const focus=[
  ['focus-centers','Mean-shift returns two inaccurate centers','Native center extraction produces two positions. Neither matches a reference center within the 3 nm tolerance.','focus-ours','TomoDETR localizes all four particles','The complete system combines direct point prediction and cross-window refinement: four correct picks, zero false positives.'],
  ['focus-final','0 correct · 2 false positives · 4 missed','Final DeepFinder predictions, using the native post-processing and frozen operating point.','focus-ours','4 correct · 0 false positives · 0 missed','Final TomoDETR predictions in exactly the same crop and 3D evaluation tolerance.']
 ];let stage=1,stageTimer=null;
-function showFocus(n){stage=n;const s=focus[n];$('focus-baseline').src=asset(s[0]);$('baseline-stage-title').textContent=s[1];$('baseline-stage-caption').textContent=s[2];$('focus-baseline').alt=s[1];$('focus-direct').src=asset(s[3]);$('direct-stage-title').textContent=s[4];$('direct-stage-caption').textContent=s[5];$('focus-direct').alt=s[4];document.querySelectorAll('[data-stage]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.stage)===n)));}
+function showFocus(n){stage=n;const s=focus[n];$('focus-baseline').src=asset(s[0]);$('baseline-stage-title').textContent=s[1];$('baseline-stage-caption').textContent=s[2];$('focus-baseline').alt=s[1];$('focus-direct').src=asset(s[3]);$('direct-stage-title').textContent=s[4];$('direct-stage-caption').textContent=s[5];$('focus-direct').alt=s[4];document.querySelectorAll('button[data-stage]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.stage)===n)));}
 function stopFocus(){clearInterval(stageTimer);stageTimer=null;$('stage-play').textContent='▶ Play recorded stages';$('stage-play').setAttribute('aria-pressed','false');}
-$('stage-play').onclick=()=>{if(stageTimer){stopFocus();return;}showFocus(0);$('stage-play').textContent='Ⅱ Pause stages';$('stage-play').setAttribute('aria-pressed','true');stageTimer=setInterval(()=>showFocus((stage+1)%4),3000);};document.querySelectorAll('[data-stage]').forEach(b=>b.onclick=()=>{stopFocus();showFocus(Number(b.dataset.stage));});showFocus(1);
+$('stage-play').onclick=()=>{if(stageTimer){stopFocus();return;}showFocus(0);$('stage-play').textContent='Ⅱ Pause stages';$('stage-play').setAttribute('aria-pressed','true');stageTimer=setInterval(()=>showFocus((stage+1)%4),3000);};document.querySelectorAll('button[data-stage]').forEach(b=>b.onclick=()=>{stopFocus();showFocus(Number(b.dataset.stage));});showFocus(1);
 const traces={
  DeepFinder:{result:'Final crop: 0 correct · 3 false positives · 6 missed',note:'The orange overlay isolates the actual 3D semantic component spanning the six reference particles. Its native clustering yields two centers; the final crop contains three predictions in total. This saved semantic labelmap is not a probability map.',stages:[
  ['trace-input','Input & reference','Six reference particles in a crowded apo-ferritin region. The background and coordinates stay fixed throughout the trace.'],
@@ -47,7 +47,7 @@ function spin(t){if(!rotating)return;if(previous)angle+=Math.min(t-previous,60)*
 $('surface-play').onclick=()=>{if(!surface)return;if(rotating){stopRotate();return;}rotating=true;previous=0;$('surface-play').textContent='Ⅱ Pause rotation';$('surface-play').setAttribute('aria-pressed','true');frame=requestAnimationFrame(spin);};
 $('surface-details').addEventListener('toggle',async()=>{if(!$('surface-details').open){stopRotate();return;}if(!surface){try{const r=await fetch('assets/stages/surface.json');if(!r.ok)throw Error();surface=await r.json();}catch{$('surface-play').textContent='Unable to load. Reopen to retry.';return;}}drawSurface();});
 canvas.onpointerdown=e=>{if(!surface)return;stopRotate();pointer=[e.clientX,e.clientY];canvas.setPointerCapture(e.pointerId);};canvas.onpointermove=e=>{if(!pointer)return;angle+=(e.clientX-pointer[0])*.008;tilt=Math.max(-1.3,Math.min(1.3,tilt+(e.clientY-pointer[1])*.008));pointer=[e.clientX,e.clientY];drawSurface();};canvas.onpointerup=canvas.onpointercancel=()=>pointer=null;
-document.addEventListener('visibilitychange',()=>{if(document.hidden){stopFocus();stopTrace();stopRotate();}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){stopRotate();}});
 // Visible players loop automatically; scrubbing pauses at an exact recorded stage.
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
 function makePlayer({section,range,output,button,count,index,show}){
@@ -55,9 +55,9 @@ function makePlayer({section,range,output,button,count,index,show}){
  const slider=$(range),label=$(output),control=$(button),duration=2100;
  function paint(){const n=count();slider.max=n-1;slider.value=Math.min(position,n-1);label.textContent=`${index()+1} / ${n}`;control.textContent=playing?'Ⅱ Pause loop':'▶ Play loop';control.setAttribute('aria-pressed',String(playing));}
  function advance(t){if(playing&&visible&&!document.hidden&&slider.getClientRects().length){if(last){position+=(Math.min(t-last,100))/duration;if(position>=count())position=0;const n=Math.min(count()-1,Math.floor(position));if(n!==index())show(n);}paint();}last=t;requestAnimationFrame(advance);}
- slider.addEventListener('input',()=>{playing=false;position=Number(slider.value);show(Math.min(count()-1,Math.round(position)));paint();});
+ slider.addEventListener('input',()=>{playing=false;position=Math.min(count()-1,Math.round(Number(slider.value)));show(position);paint();});
  control.onclick=()=>{playing=!playing;last=0;paint();};
- new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;last=0;},{threshold:.18}).observe($(section));
+ new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;last=0;},{threshold:.01}).observe(slider.closest('#projection-details')||$(section));
  reducedMotion.addEventListener('change',e=>{if(e.matches){playing=false;paint();}});
  paint();requestAnimationFrame(advance);
  return {reset(){position=0;show(0);paint();}};

@@ -1,0 +1,66 @@
+/* Usage: SITE_URL=http://127.0.0.1:18765/ node tools/check_site.cjs
+ * Requires Playwright Chromium. PLAYWRIGHT_MODULE and CHROMIUM_PATH may override local installations.
+ */
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const fs=require('fs'),path=require('path'),assert=require('assert/strict'),crypto=require('crypto');
+const base=process.env.SITE_URL||'http://127.0.0.1:18765/';
+const checks=[];let browser;
+async function check(name,fn){await fn();checks.push(name);console.log('PASS '+name);}
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+async function imageHash(page,id){await page.waitForTimeout(180);return crypto.createHash('sha256').update(await page.locator(id).screenshot()).digest('hex');}
+async function frameChanges(page,action,ids){const before=await Promise.all(ids.map(id=>imageHash(page,id)));await action();for(let i=0;i<ids.length;i++)assert.notEqual(await imageHash(page,ids[i]),before[i],ids[i]+' must visibly change');}
+(async()=>{
+ browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{}),args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const ctx=await browser.newContext({viewport:{width:1440,height:1050},reducedMotion:'reduce',permissions:['clipboard-read','clipboard-write']});
+ const page=await ctx.newPage(),errors=[],failed=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().startsWith(new URL(base).origin)&&r.status()>=400)failed.push(r.url());});
+ await page.goto(base,{waitUntil:'networkidle'});await page.waitForSelector('#volume-demo[data-ready=true]');
+ const root=page.locator('#volume-demo'),both=['#volume-left canvas','#volume-right canvas'];
+ await check('Local links, anchors, download routes, and unique IDs',async()=>{
+  const audit=await page.evaluate(()=>{const ids=[...document.querySelectorAll('[id]')].map(e=>e.id);return {duplicates:ids.filter((id,i)=>ids.indexOf(id)!==i),missing:[...document.querySelectorAll('a[href^="#"]')].map(a=>a.getAttribute('href')).filter(h=>h.length>1&&!document.getElementById(h.slice(1))),local:[...new Set([...document.querySelectorAll('a[href]')].map(a=>a.getAttribute('href')).filter(h=>!h.startsWith('#')&&!/^[a-z]+:/i.test(h)))]};});
+  assert.deepEqual(audit.duplicates,[]);assert.deepEqual(audit.missing,[]);for(const href of audit.local)assert((await page.request.get(new URL(href,base).href)).ok(),href);
+  for(const href of ['#crowded','#formulation','#accuracy','#efficiency','#native-traces','#citation']){await page.locator(`header a[href="${href}"]`).click();await page.waitForTimeout(100);assert.equal(new URL(page.url()).hash,href);}
+ });
+ await root.scrollIntoViewIfNeeded();
+ await check('3D starts correctly and respects reduced motion',async()=>{assert.equal(await page.locator('.volume-viewport canvas').count(),2);assert.equal(await page.locator('#volume-orbit').getAttribute('aria-pressed'),'false');const y=await root.getAttribute('data-yaw');await page.waitForTimeout(300);assert.equal(await root.getAttribute('data-yaw'),y);});
+ await check('Both views respond to pointer rotation and keyboard zoom',async()=>{
+  await frameChanges(page,async()=>{const box=await page.locator(both[0]).boundingBox();await page.mouse.move(box.x+80,box.y+100);await page.mouse.down();await page.mouse.move(box.x+155,box.y+140,{steps:6});await page.mouse.up();},both);
+  await frameChanges(page,async()=>{await page.locator(both[1]).focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('+');},both);assert.equal(await root.getAttribute('data-zoom'),'1.10');
+ });
+ await check('Zoom slider updates both rendered scenes',()=>frameChanges(page,()=>page.locator('#volume-zoom').fill('1.4'),both));
+ await check('All four 3D stages and reference-point/slice toggles visibly work',async()=>{
+  for(let i=0;i<4;i++){await page.locator('#volume-stage').fill(String(i));assert.equal(await root.getAttribute('data-stage'),String(i));assert.equal(await page.locator('#volume-play').getAttribute('aria-pressed'),'false');}
+  await frameChanges(page,()=>page.locator('#volume-reference').uncheck(),both);await page.locator('#volume-reference').check();
+  await frameChanges(page,()=>page.locator('#volume-slice').uncheck(),both);await page.locator('#volume-slice').check();
+ });
+ await check('Cutaway and depth change real rendered content',async()=>{await page.locator('#volume-reset').click();await page.locator('#volume-cut').check();await frameChanges(page,()=>page.locator('#volume-depth').fill('0'),both);assert.equal(await root.getAttribute('data-cut'),'true');assert.equal(await page.locator('#volume-depth-label').innerText(),'1 / 22');await page.locator('#volume-cut').uncheck();});
+ await check('Reset restores stage, view, zoom, depth and toggles',async()=>{await page.locator('#volume-reset').click();assert.equal(await root.getAttribute('data-stage'),'2');assert.equal(await root.getAttribute('data-yaw'),'0.3800');assert.equal(await root.getAttribute('data-zoom'),'1.00');assert.equal(await page.locator('#volume-depth').inputValue(),'21');assert(!await page.locator('#volume-cut').isChecked());assert(await page.locator('#volume-reference').isChecked());assert(await page.locator('#volume-slice').isChecked());});
+ await check('3D stage play/pause, loop wrap and rotate/pause',async()=>{await page.locator('#volume-stage').fill('3');await page.locator('#volume-play').click();await page.waitForFunction(()=>document.querySelector('#volume-demo').dataset.stage==='0',{},{timeout:10000});await page.locator('#volume-play').click();await page.waitForTimeout(350);assert.equal(await root.getAttribute('data-stage'),'0');await page.locator('#volume-orbit').click();const a=await root.getAttribute('data-yaw');await page.waitForTimeout(300);assert.notEqual(await root.getAttribute('data-yaw'),a);await page.locator('#volume-orbit').click();const b=await root.getAttribute('data-yaw');await page.waitForTimeout(300);assert.equal(await root.getAttribute('data-yaw'),b);});
+ await check('3D controls do not change the separate 2D stage or its ARIA state',async()=>{await page.locator('#projection-details>summary').click();await page.locator('#focus-scrub').fill('1');await page.locator('#volume-reset').click();assert.equal(await page.locator('#focus-progress').innerText(),'2 / 4');assert.equal(await root.getAttribute('aria-pressed'),null);});
+ await check('All 2D comparison stages, fractional scrub resume, pause and loop',async()=>{
+  for(let i=0;i<4;i++){await page.locator('#focus-scrub').fill(String(i));assert.equal(await page.locator('#focus-progress').innerText(),`${i+1} / 4`);await page.waitForFunction(()=>[...document.querySelectorAll('.focus-grid img')].every(im=>im.complete&&im.naturalWidth>0));}
+  await page.locator('#focus-scrub').fill('1.8');assert.equal(await page.locator('#focus-progress').innerText(),'3 / 4');await page.locator('#stage-play').click();await page.waitForTimeout(300);assert.equal(await page.locator('#focus-progress').innerText(),'3 / 4');await page.waitForFunction(()=>document.querySelector('#focus-progress').textContent==='4 / 4');await page.waitForFunction(()=>document.querySelector('#focus-progress').textContent==='1 / 4');await page.locator('#stage-play').click();const text=await page.locator('#focus-progress').innerText();await page.waitForTimeout(250);assert.equal(await page.locator('#focus-progress').innerText(),text);
+ });
+ await check('All 18 baseline stages, method switching, stage scales, playback',async()=>{
+  for(const [method,n] of [['DeepFinder',4],['DeepETPicker',5],['OCTOPI',9]]){await page.locator(`[data-method="${method}"]`).click();assert.equal(await page.locator(`[data-method="${method}"]`).getAttribute('aria-pressed'),'true');assert.equal(await page.locator('#trace-scrub').getAttribute('max'),String(n-1));for(let i=0;i<n;i++){await page.locator('#trace-scrub').fill(String(i));assert.equal(await page.locator('#trace-progress').innerText(),`${i+1} / ${n}`);await page.waitForFunction(()=>{const im=document.querySelector('#trace-image');return im.complete&&im.naturalWidth>0;});}await page.locator('#trace-play').click();await page.waitForFunction(()=>document.querySelector('#trace-progress').textContent.startsWith('1 /'));await page.locator('#trace-play').click();}
+  await page.locator('[data-method="OCTOPI"]').click();await page.locator('#trace-scrub').fill('4');assert(await page.locator('#trace-scale').isVisible());assert.equal(await page.locator('#trace-scale-name').innerText(),'Normalized distance');await page.locator('#trace-scrub').fill('8');assert(!await page.locator('#trace-scale').isVisible());
+ });
+ await check('Visible disclosure panels open and close',async()=>{for(const selector of ['.volume-source','.display-notes']){const details=page.locator(selector);await details.locator('summary').click();assert(await details.evaluate(e=>e.open));await details.locator('summary').click();assert(!await details.evaluate(e=>e.open));}});
+ const citation=fs.readFileSync(path.join(__dirname,'..','CITATION.bib'),'utf8');
+ await check('BibTeX copy, denied-permission fallback, and actual .bib download',async()=>{
+  await page.locator('#copy-citation').click();assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),citation);
+  const downloadEvent=page.waitForEvent('download');await page.locator('a[download="TomoDETR.bib"]').click();const download=await downloadEvent;assert.equal(download.suggestedFilename(),'TomoDETR.bib');assert.equal(fs.readFileSync(await download.path(),'utf8'),citation);
+  await page.evaluate(()=>navigator.clipboard.writeText=()=>Promise.reject(Error('denied')));await page.locator('#copy-citation').click();assert.equal((await page.evaluate(()=>getSelection().toString())).trimEnd(),citation.trimEnd());
+ });
+ await check('Hidden-tab pause preserves playback controls and resumes correctly',async()=>{
+  await page.locator('#trace-scrub').fill('2');await page.locator('#trace-play').click();await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});const t=await page.locator('#trace-progress').innerText();await page.waitForTimeout(2300);assert.equal(await page.locator('#trace-progress').innerText(),t);assert.equal(await page.locator('#trace-play').getAttribute('aria-pressed'),'true');await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});await page.waitForFunction(()=>document.querySelector('#trace-progress').textContent==='4 / 9');await page.locator('#trace-play').click();
+ });
+ await check('Mobile touch gestures, controls and responsive widths',async()=>{
+  const mobile=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'}),mp=await mobile.newPage();await mp.goto(base,{waitUntil:'networkidle'});await mp.waitForSelector('#volume-demo[data-ready=true]');await mp.locator('#volume-left').scrollIntoViewIfNeeded();const box=await mp.locator('#volume-left canvas').boundingBox();const session=await mobile.newCDPSession(mp);const before=await mp.locator('#volume-demo').getAttribute('data-pitch');await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:box.x+60,y:box.y+80}]});for(let i=1;i<=6;i++){await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:box.x+60,y:box.y+80+i*8}]});await pause(25);}await session.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await mp.waitForTimeout(400);assert.notEqual(await mp.locator('#volume-demo').getAttribute('data-pitch'),before);await mp.locator('#volume-cut').tap();await mp.waitForFunction(()=>document.querySelector('#volume-cut').checked);await mp.locator('#volume-reset').tap();await mp.waitForFunction(()=>!document.querySelector('#volume-cut').checked);for(const width of [320,390,768]){await mp.setViewportSize({width,height:844});assert(!await mp.evaluate(()=>document.documentElement.scrollWidth>innerWidth),`overflow ${width}`);}await mobile.close();
+ });
+ await check('Missing 3D asset fallback and WebGL-context loss leave working 2D controls',async()=>{
+  const fp=await ctx.newPage();await fp.route('**/assets/volume/density.bin',r=>r.fulfill({status:503,body:'unavailable'}));await fp.goto(base,{waitUntil:'networkidle'});await fp.waitForSelector('#volume-demo[data-ready=failed]');assert(await fp.locator('#focus-scrub').isVisible());assert(await fp.locator('#volume-orbit').isDisabled());await fp.locator('#focus-scrub').fill('3');assert.equal(await fp.locator('#focus-progress').innerText(),'4 / 4');await fp.close();
+  await page.locator('#volume-left canvas').evaluate(c=>c.dispatchEvent(new Event('webglcontextlost',{cancelable:true})));assert.equal(await root.getAttribute('data-ready'),'failed');assert(await page.locator('#volume-reset').isDisabled());assert(await page.locator('#focus-scrub').isVisible());
+ });
+ assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);console.log(JSON.stringify({url:base,passed:checks.length,checks,consoleErrors:errors,failedResources:failed},null,2));await browser.close();
+})().catch(async error=>{console.error(error);if(browser)await browser.close();process.exitCode=1;});
