@@ -74,3 +74,12 @@ $('copy-citation').addEventListener('click',async()=>{
  try{await navigator.clipboard.writeText(content);$('citation-status').textContent='BibTeX copied.';}
  catch{const selection=window.getSelection(),range=document.createRange();range.selectNodeContents($('citation-text'));selection.removeAllRanges();selection.addRange(range);$('citation-status').textContent='Citation selected. Press Ctrl+C or ⌘C to copy.';}
 });
+
+// A direct link to a folded demo opens it before scrolling into view.
+function revealDemoAnchor(){
+ let id;try{id=decodeURIComponent(location.hash.slice(1));}catch{return;}
+ const target=document.getElementById(id);if(!target)return;
+ let details=target.closest('details');while(details){details.open=true;details=details.parentElement.closest('details');}
+ if(target.matches('details'))requestAnimationFrame(()=>target.scrollIntoView({block:'start'}));
+}
+window.addEventListener('hashchange',revealDemoAnchor);revealDemoAnchor();

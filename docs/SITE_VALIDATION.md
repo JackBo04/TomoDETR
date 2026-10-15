@@ -10,6 +10,7 @@ Checked on 2026-10-15 with Chromium, WebGL rendering, and mobile touch emulation
 - Independent 2D/3D controls; fractional scrubbing resumes without jumping backwards.
 - All three baseline selectors, intermediate stages, legends and color scales.
 - Disclosure sections, clipboard copying, denied-clipboard fallback and actual `.bib` file contents.
+- Baseline stage details are collapsed under the main demo; section links open the panel automatically. All baseline stages remain selectable after expansion.
 - Hidden-tab playback state and reduced-motion behavior.
 - Vertical touch rotation and subsequent taps; layout widths 320, 390 and 768 pixels.
 - A failed volume request and a lost WebGL context expose working 2D controls and disable unavailable 3D actions.
