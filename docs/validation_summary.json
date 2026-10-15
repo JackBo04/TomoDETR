@@ -1,0 +1,18 @@
+{
+  "unit_tests": 13,
+  "synthetic_e2e": true,
+  "published_benchmark_reproduced": false,
+  "python": "3.10.12",
+  "torch": "2.3.0a0+6ddf5cf85e.nv24.04",
+  "numpy": "1.24.4",
+  "scipy": "1.12.0",
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "paper_source_hashes_still_current": true,
+  "excluded": [
+    "weights",
+    "datasets",
+    "feature caches",
+    "private predictions",
+    "experiment logs"
+  ]
+}

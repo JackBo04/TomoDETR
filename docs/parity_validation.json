@@ -1,0 +1,9 @@
+{
+  "detector_forward": "bit-exact, four layers on 32^3 input",
+  "detector_state_dict": "strict compatible",
+  "cwqr_state_dict": "strict compatible",
+  "cwqr_forward": "bit-exact with nonzero residual weights",
+  "local_loss": "within 1e-6 relative tolerance",
+  "global_loss": "bit-exact",
+  "trained_benchmark_reproduction": false
+}

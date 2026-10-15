@@ -1,0 +1,20 @@
+[
+  {
+    "id": "train_example",
+    "volume": "data/train.npy",
+    "annotations": "data/train.csv",
+    "split": "train"
+  },
+  {
+    "id": "validation_example",
+    "volume": "data/validation.npy",
+    "annotations": "data/validation.csv",
+    "split": "validation"
+  },
+  {
+    "id": "test_example",
+    "volume": "data/test.npy",
+    "annotations": "data/test.csv",
+    "split": "test"
+  }
+]

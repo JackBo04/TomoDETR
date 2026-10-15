@@ -1,0 +1,10 @@
+{
+  "detector": {
+    "epoch": 11,
+    "state_dict": "bit-exact after resume"
+  },
+  "cwqr": {
+    "epoch": 40,
+    "state_dict": "bit-exact after resume"
+  }
+}

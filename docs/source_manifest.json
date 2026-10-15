@@ -1,0 +1,26 @@
+{
+  "source_files": {
+    "models/pure_detr.py": "3b248ef13533c7d24d6a9876f083a492f54af606795c0ce62c34b03ab0e58b90",
+    "models/tgr.py": "e173dc81bcf5da3983472fa4e8126c93fd28f659fa5c45219e955995118fc7c1",
+    "models/sparse_attention.py": "2d6d2745e909964ab7c6cd53bf1dbec9c65ffbb189c34fb712083ec49996669a",
+    "models/neighbor_graph.py": "5125a1ff9879a67369bf2571818a228152983c1a0f278c96d48a83580451a5ec",
+    "models/detr_loss.py": "8c71a5dfe927ad0dad2971fa3930cfc3f3f33127e7a4a8cf06cc8a2527c60351",
+    "util/geometry.py": "5982ab60711b1b51dfaec335be3d5fa209e764389eb08f3110f146231f0ffd5b",
+    "datasets/czii.py": "80799e69488875028e04e105a78a13edba04d83a3fe2757eb4abe51c240750be",
+    "evaluation/metrics.py": "09373933f2888db40509c4d12d61340c8aced1132f61a915f941a205c77aca68"
+  },
+  "paper_files": {
+    "main.tex": "2cf35e4c0465222f492cebb247648cfe0cbe7c6640ac15461895e79c879a07c8",
+    "sections/method_body.tex": "201625ff29af046568348ef0b4a214ebe2917f7c9f6d355cdafa5317312a5b23",
+    "sections/experiment_details.tex": "230ecdaa0257f0935115977c22965234bad980bb672618f8a18401d69d704e25",
+    "tables/implementation_settings.tex": "49f1164f069ae6386bc4124e2976f945d2368d0cdc6f9b6161be296db96fe6bf",
+    "tables/deepict_splits.tex": "a35ed3821df0b9bc60ab73005a1ea5c5f8d242b96e1b71099134d3a4292fe846"
+  },
+  "protocol_sources": {
+    "shared_backbone_dense_czii_2026-09-13/code/official_metric.py": "f41f02d3bcef02b22e11cc29a4b2dde2bea16ffe4d238993447b84d13608e95e",
+    "shared_backbone_dense_czii_2026-09-13/code/evaluate.py": "99d4ef6fe1c0d637553a3b57b4e47aed4e77ea2b9493065000f5883e42f45a15",
+    "tomoDETR/evaluation/shrec.py": "e31a3503d02c26a40c55bf010c8324cd4312a7cfbf46566fd1321fac0ded4610",
+    "tomoDETR/configs/tomodetr_uniform64_tgr_shrec_refit.yaml": "4e1f1312edd166f7799314c28471416fccc2a2ae21bc34a5c78158f30c52de1b",
+    "autodataset_experiments_2026-09-17/deepict_code/configs/deepict_split0.yaml": "714d86abfb229dc7a871c50ebd6deb3910aee706fe0a742c9978ae858554616d"
+  }
+}

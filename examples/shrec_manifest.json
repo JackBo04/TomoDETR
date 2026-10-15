@@ -1,0 +1,26 @@
+[
+  {
+    "id": "train_example",
+    "volume": "data/train.npy",
+    "annotations": "data/train.csv",
+    "split": "train",
+    "particle_locations": "data/train/particle_locations.txt",
+    "occupancy": "data/train/occupancy_mask.mrc"
+  },
+  {
+    "id": "validation_example",
+    "volume": "data/validation.npy",
+    "annotations": "data/validation.csv",
+    "split": "validation",
+    "particle_locations": "data/validation/particle_locations.txt",
+    "occupancy": "data/validation/occupancy_mask.mrc"
+  },
+  {
+    "id": "test_example",
+    "volume": "data/test.npy",
+    "annotations": "data/test.csv",
+    "split": "test",
+    "particle_locations": "data/test/particle_locations.txt",
+    "occupancy": "data/test/occupancy_mask.mrc"
+  }
+]
