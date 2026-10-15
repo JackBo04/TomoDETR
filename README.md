@@ -2,7 +2,7 @@
 
 ### Point-Set Prediction with Cross-Window Refinement for Cryo-ET Particle Localization
 
-[**Project page & interactive comparisons**](https://jackbo04.github.io/TomoDETR-release/) · [Getting started](docs/GETTING_STARTED.md) · [Data preparation](docs/DATA.md) · [MIT license](LICENSE)
+[Paper](https://openreview.net/forum?id=i45Kyug4G9) · [**Project page & interactive comparisons**](https://jackbo04.github.io/TomoDETR-release/) · [Getting started](docs/GETTING_STARTED.md) · [Data preparation](docs/DATA.md) · [MIT license](LICENSE)
 
 **TomoDETR finds particle centers directly in 3D cryo-electron tomograms.** A local set detector predicts particle coordinates and classes from point annotations. The **Cross-Window Query Refiner (CWQR)** then lets nearby candidates from overlapping windows exchange information, jointly refining their coordinates and class scores before final selection.
 
@@ -90,6 +90,21 @@ Use `configs/shrec.yaml` or `configs/deepict.yaml` for the other datasets. Omit 
 | `docs/` | Training instructions, data formats, implementation mapping, validation |
 
 The release contains source code and qualitative figure excerpts; pretrained checkpoints and full datasets are not bundled. Implementation and historical training details are documented in [Paper alignment](docs/PAPER_ALIGNMENT.md), with checks in [Validation](docs/VALIDATION.md).
+
+## Citation
+
+```bibtex
+@misc{zou2026tomodetr,
+  title  = {{TomoDETR}: Point-Set Prediction with Cross-Window Refinement
+            for {Cryo-ET} Particle Localization},
+  author = {Huangbo Zou and Suyi Chen and Mengxue Wang and Yilai Li
+            and Zhaoqian Wang and Haibin Ling},
+  year   = {2026},
+  url    = {https://openreview.net/forum?id=i45Kyug4G9}
+}
+```
+
+[Download BibTeX](CITATION.bib)
 
 ## License
 

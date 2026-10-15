@@ -68,3 +68,9 @@ const tracePlayer=makePlayer({section:'native-traces',range:'trace-scrub',output
 document.querySelectorAll('[data-method]').forEach(b=>b.onclick=()=>{selectMethod(b.dataset.method);tracePlayer.reset();});
 // Decode in advance so playback never flashes unloaded stage assets.
 [...new Set([...focus.flatMap(s=>[s[0],s[3]]),...Object.values(traces).flatMap(t=>t.stages.map(s=>s[0]))])].forEach(n=>{const im=new Image();im.src=asset(n);im.decode().catch(()=>{});});
+
+$('copy-citation').addEventListener('click',async()=>{
+ const content=$('citation-text').textContent;
+ try{await navigator.clipboard.writeText(content);$('citation-status').textContent='BibTeX copied.';}
+ catch{const selection=window.getSelection(),range=document.createRange();range.selectNodeContents($('citation-text'));selection.removeAllRanges();selection.addRange(range);$('citation-status').textContent='Citation selected. Press Ctrl+C or ⌘C to copy.';}
+});
