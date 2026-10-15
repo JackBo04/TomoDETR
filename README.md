@@ -6,8 +6,6 @@
 
 **TomoDETR finds particle centers directly in 3D cryo-electron tomograms.** A local set detector predicts particle coordinates and classes from point annotations. The **Cross-Window Query Refiner (CWQR)** then lets nearby candidates from overlapping windows exchange information, jointly refining their coordinates and class scores before final selection.
 
-**Paper:** arXiv submission in progress. The paper link and citation will be added when available.
-
 <p align="center"><a href="https://jackbo04.github.io/TomoDETR-release/#crowded"><img src="site/assets/stages/recorded-stages.gif" width="900" alt="Recorded stages: connected semantic foreground, native mean-shift centers, and direct point-set localization"></a></p>
 
 *Four neighboring particles merge into one DeepFinder semantic foreground; native mean-shift returns two inaccurate centers. TomoDETR localizes all four. [Play the recorded stages →](https://jackbo04.github.io/TomoDETR-release/#crowded)*
@@ -90,20 +88,8 @@ Use `configs/shrec.yaml` or `configs/deepict.yaml` for the other datasets. Omit 
 | `examples/` | Manifest examples, coordinate conversion, synthetic smoke workflow |
 | `tests/` | Model, evaluation, calibration, and prediction checks |
 | `docs/` | Training instructions, data formats, implementation mapping, validation |
-| `site/` | Static GitHub Pages site and interactive qualitative comparisons |
-| `deployment/` | Pages publishing script and optional Actions workflow templates |
 
 The release contains source code and qualitative figure excerpts; pretrained checkpoints and full datasets are not bundled. Implementation and historical training details are documented in [Paper alignment](docs/PAPER_ALIGNMENT.md), with checks in [Validation](docs/VALIDATION.md).
-
-## Project page
-
-The site uses plain HTML, CSS, and JavaScript, with no build step. Preview locally:
-
-```bash
-python -m http.server 8000 --directory site
-```
-
-Open `http://localhost:8000`. GitHub Pages serves the `gh-pages` branch. After committing updates on `main`, run `bash deployment/publish-pages.sh` to publish the site. Optional Actions templates are included in `deployment/` for accounts with workflow permissions. The page presents the formulation, accuracy, inference speed, and recorded crowded-region stages. [Stage provenance](site/assets/stages/PROVENANCE.md) explains the scientific displays.
 
 ## License
 
