@@ -21,3 +21,5 @@ All recorded predictions are retained inside the selected crop. Trace counts (TP
 Backgrounds are means of original MRC slices. Foreground, probability, response, and label overlays are max projections of saved 3D arrays. Probability and smoothed-response colors use a 0–1 scale. Distance-map display is normalized by its maximum; watershed colors distinguish labels. No generated model responses are used. Playback changes the recorded stage; it does not simulate optimization trajectories.
 
 Source hashes and crop metrics are in `provenance.json`. The code's MIT license does not relicense original tomographic datasets; original CZII dataset terms apply to image excerpts.
+
+Display update: exports are rendered at 1400 × 1080 for high-density screens, with proportionally scaled annotations and scale bars. Original tomogram sampling and recorded coordinates are unchanged. Playback loops through recorded stage endpoints; the slider selects those endpoints.

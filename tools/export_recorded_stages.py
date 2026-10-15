@@ -14,20 +14,20 @@ args=parser.parse_args()
 root=args.workspace_root.resolve();out=args.output;out.mkdir(parents=True,exist_ok=True)
 sys.path.insert(0,str(root/'paper/figures/qualitative_design_2026-09-13'))
 from data_utils import load_case,validate_crop
-W,H=700,540
+W,H=1400,1080
 
 def fit(ny,nx):
  scale=min(W/nx,H/ny);w,h=round(nx*scale),round(ny*scale);return (W-w)//2,(H-h)//2,w,h
 def raw_image(raw):
- lo,hi=np.percentile(raw,[1,99]);a=np.uint8(np.clip((raw-lo)/(hi-lo),0,1)*255);ox,oy,w,h=fit(*raw.shape);base=Image.new('RGB',(W,H),'#182027');base.paste(Image.fromarray(np.flipud(a)).convert('RGB').resize((w,h),Image.Resampling.BILINEAR),(ox,oy));return base
+ lo,hi=np.percentile(raw,[1,99]);a=np.uint8(np.clip((raw-lo)/(hi-lo),0,1)*255);ox,oy,w,h=fit(*raw.shape);base=Image.new('RGB',(W,H),'#111214');base.paste(Image.fromarray(np.flipud(a)).convert('RGB').resize((w,h),Image.Resampling.BILINEAR),(ox,oy));return base
 def xy(p,b):
  sx,sy=(b[1]-b[0])[:2];scale=min(W/sx,H/sy);w,h=sx*scale,sy*scale;return ((W-w)/2+(p[0]-b[0,0])*scale,(H-h)/2+h-(p[1]-b[0,1])*scale)
 def marks(im,pts,b,color,kind='o',r=9):
- d=ImageDraw.Draw(im)
+ d=ImageDraw.Draw(im);r*=2
  for p in pts:
   x,y=xy(p,b)
-  if kind=='x':d.line((x-r,y-r,x+r,y+r),fill=color,width=3);d.line((x-r,y+r,x+r,y-r),fill=color,width=3)
-  else:d.ellipse((x-r,y-r,x+r,y+r),outline=color,width=3)
+  if kind=='x':d.line((x-r,y-r,x+r,y+r),fill=color,width=6);d.line((x-r,y+r,x+r,y-r),fill=color,width=6)
+  else:d.ellipse((x-r,y-r,x+r,y+r),outline=color,width=6)
  return im
 def overlay(im,values,kind='heat'):
  v=values.max(0) if values.ndim==3 else values
@@ -39,7 +39,7 @@ def overlay(im,values,kind='heat'):
   cmap=matplotlib.colormaps['magma' if kind=='heat' else 'viridis'];x=np.clip(v,0,1);a=np.uint8(cmap(x)*255);a[:,:,3]=np.uint8(np.clip(x*1.8,0,.82)*255)
  ox,oy,w,h=fit(*v.shape);tile=Image.fromarray(np.flipud(a)).resize((w,h),Image.Resampling.NEAREST if kind in ['mask','labels'] else Image.Resampling.BILINEAR);lay=Image.new('RGBA',(W,H));lay.paste(tile,(ox,oy));return Image.alpha_composite(im.convert('RGBA'),lay).convert('RGB')
 def save(im,name,b):
- sx,sy=(b[1]-b[0])[:2];scale=min(W/sx,H/sy);ox=(W-sx*scale)/2;oy=(H-sy*scale)/2;bottom=H-oy;d=ImageDraw.Draw(im);length=100*scale;d.rectangle((ox+16,bottom-42,ox+length+40,bottom-9),fill='#17242b');d.line((ox+28,bottom-29,ox+28+length,bottom-29),fill='white',width=4);d.text((ox+28,bottom-24),'10 nm',fill='white');im.save(out/name,quality=95)
+ sx,sy=(b[1]-b[0])[:2];scale=min(W/sx,H/sy);ox=(W-sx*scale)/2;oy=(H-sy*scale)/2;bottom=H-oy;d=ImageDraw.Draw(im);length=100*scale;d.rectangle((ox+32,bottom-84,ox+length+80,bottom-18),fill='#111214');d.line((ox+56,bottom-58,ox+56+length,bottom-58),fill='white',width=8);d.text((ox+56,bottom-48),'10 nm',fill='white',font=__import__('PIL.ImageFont',fromlist=['ImageFont']).truetype(str(Path(matplotlib.get_data_path())/'fonts/ttf/DejaVuSans.ttf'),20));im.save(out/name,quality=95)
 def final(im,pred,hit,gt,b):
  marks(im,gt,b,'#ffe08c',r=11);marks(im,pred[hit],b,'#33e1b0');marks(im,pred[~hit],b,'#ff607b','x');return im
 # Current manuscript's four-particle comparison.
