@@ -2,15 +2,15 @@
 
 ### Point-Set Prediction with Cross-Window Refinement for Cryo-ET Particle Localization
 
-[Paper](https://openreview.net/forum?id=i45Kyug4G9) · [**Project page & interactive comparisons**](https://jackbo04.github.io/TomoDETR-release/) · [Getting started](docs/GETTING_STARTED.md) · [Data preparation](docs/DATA.md) · [MIT license](LICENSE)
+[Paper](https://openreview.net/forum?id=i45Kyug4G9) · [**Project page & interactive comparisons**](https://jackbo04.github.io/TomoDETR/) · [Getting started](docs/GETTING_STARTED.md) · [Data preparation](docs/DATA.md) · [MIT license](LICENSE)
 
 **TomoDETR finds particle centers directly in 3D cryo-electron tomograms.** A local set detector predicts particle coordinates and classes from point annotations. The **Cross-Window Query Refiner (CWQR)** then lets nearby candidates from overlapping windows exchange information, jointly refining their coordinates and class scores before final selection.
 
-<p align="center"><a href="https://jackbo04.github.io/TomoDETR-release/#crowded"><img src="site/assets/stages/recorded-stages.gif" width="900" alt="Recorded stages: connected semantic foreground, native mean-shift centers, and direct point-set localization"></a></p>
+<p align="center"><a href="https://jackbo04.github.io/TomoDETR/#crowded"><img src="site/assets/stages/recorded-stages.gif" width="900" alt="Recorded stages: connected semantic foreground, native mean-shift centers, and direct point-set localization"></a></p>
 
-*Four neighboring particles merge into one DeepFinder semantic foreground; native mean-shift returns two inaccurate centers. TomoDETR localizes all four. [Explore the linked 3D views →](https://jackbo04.github.io/TomoDETR-release/#crowded)*
+*Four neighboring particles merge into one DeepFinder semantic foreground; native mean-shift returns two inaccurate centers. TomoDETR localizes all four. [Explore the linked 3D views →](https://jackbo04.github.io/TomoDETR/#crowded)*
 
-**[Inspect the native baseline pipelines →](https://jackbo04.github.io/TomoDETR-release/#native-traces)** Explore real DeepFinder mean-shift, DeepETPicker MP-NMS, and OCTOPI watershed intermediates in a separate crowded region.
+**[Inspect the native baseline pipelines →](https://jackbo04.github.io/TomoDETR/#native-traces)** Explore real DeepFinder mean-shift, DeepETPicker MP-NMS, and OCTOPI watershed intermediates in a separate crowded region.
 
 ## Why TomoDETR?
 
@@ -47,8 +47,8 @@ Under a shared backbone, training data, and update budget on CZII:
 Requires Python 3.10+ and PyTorch 2.3+. Install a suitable PyTorch build for your device, then:
 
 ```bash
-git clone https://github.com/JackBo04/TomoDETR-release.git
-cd TomoDETR-release
+git clone https://github.com/JackBo04/TomoDETR.git
+cd TomoDETR
 python -m pip install -e '.[test]'
 python -m tomodetr --help
 python -m pytest -q
