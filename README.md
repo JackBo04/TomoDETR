@@ -8,11 +8,11 @@
 
 **Paper:** arXiv submission in progress. The paper link and citation will be added when available.
 
-<p align="center"><a href="https://jackbo04.github.io/TomoDETR-release/#comparison"><img src="site/assets/comparison.gif" width="460" alt="Recorded DeepFinder and TomoDETR predictions on the same crowded apo-ferritin crop"></a></p>
+<p align="center"><a href="https://jackbo04.github.io/TomoDETR-release/#crowded"><img src="site/assets/stages/recorded-stages.gif" width="900" alt="Recorded stages: connected semantic foreground, native mean-shift centers, and direct point-set localization"></a></p>
 
-*Same image, different particle predictions. Green: correct; pink: false positive; violet: missed. [Explore three real examples with an interactive comparison slider →](https://jackbo04.github.io/TomoDETR-release/#comparison)*
+*Four neighboring particles merge into one DeepFinder semantic foreground; native mean-shift returns two inaccurate centers. TomoDETR localizes all four. [Play the recorded stages →](https://jackbo04.github.io/TomoDETR-release/#crowded)*
 
-**[Try the dynamic volume demo →](https://jackbo04.github.io/TomoDETR-release/demo/)** Scan original MRC crops in XY, XZ, or YZ; compare methods at the same depth; rotate synchronized 3D predictions.
+**[Inspect the native baseline pipelines →](https://jackbo04.github.io/TomoDETR-release/#native-traces)** Explore real DeepFinder mean-shift, DeepETPicker MP-NMS, and OCTOPI watershed intermediates in a separate crowded region.
 
 ## Why TomoDETR?
 
@@ -103,7 +103,7 @@ The site uses plain HTML, CSS, and JavaScript, with no build step. Preview local
 python -m http.server 8000 --directory site
 ```
 
-Open `http://localhost:8000`. GitHub Pages serves the `gh-pages` branch. After committing updates on `main`, run `bash deployment/publish-pages.sh` to publish the site. Optional Actions templates are included in `deployment/` for accounts with workflow permissions. The comparison viewer uses the recorded image crops and predictions behind the manuscript’s qualitative figure; [provenance](site/assets/PROVENANCE.md) explains the display.
+Open `http://localhost:8000`. GitHub Pages serves the `gh-pages` branch. After committing updates on `main`, run `bash deployment/publish-pages.sh` to publish the site. Optional Actions templates are included in `deployment/` for accounts with workflow permissions. The page presents the formulation, accuracy, inference speed, and recorded crowded-region stages. [Stage provenance](site/assets/stages/PROVENANCE.md) explains the scientific displays.
 
 ## License
 

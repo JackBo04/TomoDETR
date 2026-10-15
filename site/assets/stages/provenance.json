@@ -1,0 +1,44 @@
+{
+  "main": {
+    "run": "TS_89_8",
+    "gt": 4,
+    "componentCount": 1,
+    "nativeCenters": 2,
+    "DeepFinder": {
+      "TP": 0,
+      "FP": 2,
+      "FN": 4
+    },
+    "TomoDETR": {
+      "TP": 4,
+      "FP": 0,
+      "FN": 0
+    }
+  },
+  "trace": {
+    "run": "TS_100_4",
+    "gt": 6,
+    "counts": {
+      "DeepFinder": {
+        "TP": 0,
+        "FP": 3,
+        "FN": 6
+      },
+      "DeepETPicker": {
+        "TP": 1,
+        "FP": 3,
+        "FN": 5
+      },
+      "OCTOPI": {
+        "TP": 2,
+        "FP": 0,
+        "FN": 4
+      }
+    }
+  },
+  "sourceHashes": {
+    "mechanism_plot_arrays.npz": "bbb60e89c6d2f84a48b25df8d6453374521b29ce74c534d06da37cbab57083c8",
+    "deepetpicker_dense_roi_intermediates.npz": "981fbbd2ca91370071393cac85d0561671a3bd3920981998b95eac2d98601461",
+    "octopi_dense_roi_intermediates.npz": "649abc1205f10afc31aaa1e57be774dc13ca7628018a9f6dc58f4c61e5b87479"
+  }
+}
