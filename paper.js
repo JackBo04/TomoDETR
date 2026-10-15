@@ -54,7 +54,7 @@ function makePlayer({section,range,output,button,count,index,show}){
  let playing=!reducedMotion.matches,visible=false,position=index(),last=0;
  const slider=$(range),label=$(output),control=$(button),duration=2100;
  function paint(){const n=count();slider.max=n-1;slider.value=Math.min(position,n-1);label.textContent=`${index()+1} / ${n}`;control.textContent=playing?'Ⅱ Pause loop':'▶ Play loop';control.setAttribute('aria-pressed',String(playing));}
- function advance(t){if(playing&&visible&&!document.hidden){if(last){position+=(Math.min(t-last,100))/duration;if(position>=count())position=0;const n=Math.min(count()-1,Math.floor(position));if(n!==index())show(n);}paint();}last=t;requestAnimationFrame(advance);}
+ function advance(t){if(playing&&visible&&!document.hidden&&slider.getClientRects().length){if(last){position+=(Math.min(t-last,100))/duration;if(position>=count())position=0;const n=Math.min(count()-1,Math.floor(position));if(n!==index())show(n);}paint();}last=t;requestAnimationFrame(advance);}
  slider.addEventListener('input',()=>{playing=false;position=Number(slider.value);show(Math.min(count()-1,Math.round(position)));paint();});
  control.onclick=()=>{playing=!playing;last=0;paint();};
  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;last=0;},{threshold:.18}).observe($(section));
